@@ -21,8 +21,23 @@ jobs:
       - name: Build
         run: ./build-all.sh
 
-      - name: Upload Binaries
+      - name: Upload Binaries (Linux)
         uses: actions/upload-artifact@v3
         with:
-          path: ./bin/
+          name: launcvc-linux-bin
+          path: ./bin/launcvc-linux*
+          if-no-files-found: error
+
+      - name: Upload Binaries (macOS)
+        uses: actions/upload-artifact@v3
+        with:
+          name: launcvc-darwin-bin
+          path: ./bin/launcvc-darwin*
+          if-no-files-found: error
+
+      - name: Upload Binaries (Windows)
+        uses: actions/upload-artifact@v3
+        with:
+          name: launcvc-windows-bin
+          path: ./bin/launcvc-win*
           if-no-files-found: error

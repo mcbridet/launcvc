@@ -1,4 +1,4 @@
-module github.com/mcbridet/launtelcvc
+module github.com/mcbridet/launcvc
 
 go 1.19
 
