@@ -24,20 +24,20 @@ jobs:
       - name: Upload Binaries (Linux)
         uses: actions/upload-artifact@v3
         with:
-          name: launcvc-linux-bin
-          path: ./bin/launcvc-linux*
+          name: launcvc_linux_bin
+          path: ./bin/launcvc_linux*
           if-no-files-found: error
 
       - name: Upload Binaries (macOS)
         uses: actions/upload-artifact@v3
         with:
-          name: launcvc-darwin-bin
-          path: ./bin/launcvc-darwin*
+          name: launcvc_darwin_bin
+          path: ./bin/launcvc_darwin*
           if-no-files-found: error
 
       - name: Upload Binaries (Windows)
         uses: actions/upload-artifact@v3
         with:
-          name: launcvc-windows-bin
-          path: ./bin/launcvc-win*
+          name: launcvc_windows_bin
+          path: ./bin/launcvc_win*
           if-no-files-found: error
