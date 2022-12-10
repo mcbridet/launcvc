@@ -16,27 +16,27 @@ import (
 )
 
 type GraphData struct {
-	DataDown[] string `yaml:"datadown"`
-	DataUp[] string `yaml:"dataup"`
-	TotalCount int64 `yaml:"total_count"`
-	BandwidthLimit int64 `yaml:"bwlimit"`
-	Label string `yaml:"label"`
-	Title string `yaml:"title"`
+	DataDown       []string `yaml:"datadown"`
+	DataUp         []string `yaml:"dataup"`
+	TotalCount     int64    `yaml:"total_count"`
+	BandwidthLimit int64    `yaml:"bwlimit"`
+	Label          string   `yaml:"label"`
+	Title          string   `yaml:"title"`
 }
 
 const (
 	SUBSTR_START = "graph_data = {"
-	SUBSTR_END = "}"
+	SUBSTR_END   = "}"
 )
 
 func asJSON(graphData GraphData) {
-	_, err: = json.Marshal(graphData)
+	_, err := json.Marshal(graphData)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	pretty, err: = json.MarshalIndent(graphData, "", "  ")
+	pretty, err := json.MarshalIndent(graphData, "", "  ")
 	if err != nil {
 		panic(err)
 	}
@@ -45,22 +45,22 @@ func asJSON(graphData GraphData) {
 }
 
 func asCSV(graphData GraphData) {
-	writer: = csv.NewWriter(os.Stdout)
-	writer.Write([] string {
-		"Title", "Label", "Time", "DataDown", "DataUp", "TotalCount", "BandwidthLimit"
+	writer := csv.NewWriter(os.Stdout)
+	writer.Write([]string{
+		"Title", "Label", "Time", "DataDown", "DataUp", "TotalCount", "BandwidthLimit",
 	})
-	totalCountString: = strconv.FormatInt(graphData.TotalCount, 10)
-	bandwidthLimitString: = strconv.FormatInt(graphData.BandwidthLimit, 10)
-	timer: = time.Time {}
-	for index: = 0;index < len(graphData.DataDown);index++{
-		writer.Write([] string {
+	totalCountString := strconv.FormatInt(graphData.TotalCount, 10)
+	bandwidthLimitString := strconv.FormatInt(graphData.BandwidthLimit, 10)
+	timer := time.Time{}
+	for index := 0; index < len(graphData.DataDown); index++ {
+		writer.Write([]string{
 			graphData.Title,
-				graphData.Label,
-				timer.Format("15:04"),
-				graphData.DataDown[index],
-				graphData.DataUp[index],
-				totalCountString,
-				bandwidthLimitString,
+			graphData.Label,
+			timer.Format("15:04"),
+			graphData.DataDown[index],
+			graphData.DataUp[index],
+			totalCountString,
+			bandwidthLimitString,
 		})
 		timer = timer.Add(time.Minute)
 	}
@@ -69,9 +69,9 @@ func asCSV(graphData GraphData) {
 }
 
 func scrape(dataSet string, dateString string, formatString string) {
-	url: = fmt.Sprintf("https://residential.launtel.net.au/traffic-graphs/%s/%s", dataSet, dateString)
+	url := fmt.Sprintf("https://residential.launtel.net.au/traffic-graphs/%s/%s", dataSet, dateString)
 	res,
-	err: = http.Get(url)
+		err := http.Get(url)
 	if err != nil {
 		fmt.Println("Unable to fetch data from Launtel, sorry. Are you online?")
 		return
@@ -82,21 +82,21 @@ func scrape(dataSet string, dateString string, formatString string) {
 		return
 	}
 
-	docBuffer: = new(strings.Builder)
+	docBuffer := new(strings.Builder)
 	io.Copy(docBuffer, res.Body)
 
-	rx: = regexp.MustCompile(`(?s)` +
+	rx := regexp.MustCompile(`(?s)` +
 		regexp.QuoteMeta(SUBSTR_START) + `(.*?)` +
 		regexp.QuoteMeta(SUBSTR_END))
-	match: = rx.FindStringSubmatch(docBuffer.String())
-	result: = match[1]
+	match := rx.FindStringSubmatch(docBuffer.String())
+	result := match[1]
 
-		result = strings.ReplaceAll(result, "\t", " ")
+	result = strings.ReplaceAll(result, "\t", " ")
 	result = strings.ReplaceAll(result, SUBSTR_START, "")
 	result = strings.ReplaceAll(result, ",\n", "\n")
 
 	var graphData GraphData
-	if err: = yaml.Unmarshal([] byte(result), & graphData);err != nil {
+	if err := yaml.Unmarshal([]byte(result), &graphData); err != nil {
 		fmt.Println("The data we got from Launtel was malformed. They may have changed the format, or your data set + data combination aren't working.")
 		return
 	}
@@ -109,14 +109,14 @@ func scrape(dataSet string, dateString string, formatString string) {
 }
 
 func main() {
-	now: = time.Now()
+	now := time.Now()
 	var dataSet string
 	var dateString string
 	var formatString string
 
-	flag.StringVar( & dataSet, "s", "", "Data-set to fetch (eg CVC000000623965)")
-	flag.StringVar( & dateString, "d", now.Format("2006-01-02"), "Date to pull data for the given data set on (eg 2022-12-11)")
-	flag.StringVar( & formatString, "f", "csv", "Format the output in 'json' or 'csv'")
+	flag.StringVar(&dataSet, "s", "", "Data-set to fetch (eg CVC000000623965)")
+	flag.StringVar(&dateString, "d", now.Format("2006-01-02"), "Date to pull data for the given data set on (eg 2022-12-11)")
+	flag.StringVar(&formatString, "f", "csv", "Format the output in 'json' or 'csv'")
 	flag.Parse()
 
 	dataSet = strings.TrimSpace(dataSet)
@@ -133,8 +133,7 @@ func main() {
 		return
 	}
 
-	_,
-	err: = time.Parse("2006-01-02", dateString)
+	_, err := time.Parse("2006-01-02", dateString)
 	if err != nil {
 		fmt.Println("Date (-d) is invalid. Try again. Use -h for help.")
 		return
